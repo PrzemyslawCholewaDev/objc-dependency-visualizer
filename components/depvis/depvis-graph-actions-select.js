@@ -85,8 +85,9 @@ let graph_actions = {
                 this.svg.selectAll('.link')
                     .classed('dependency', false)
                     .classed('dependants', false)
-                    .transition()
-                    .attr("marker-end", "");
+                    .attr("marker-end", "")
+                    .transition();
+
 
             },
 
@@ -111,7 +112,7 @@ let graph_actions = {
                     .classed('filtered', false)
                     .classed('dependency', (l) => this._nodeExistsInLink(root,l) && this._isDependencyLink(root, l))
                     .classed('dependants', (l) => this._nodeExistsInLink(root,l) && !this._isDependencyLink(root, l))
-                    .attr("marker-end", (l) => this._nodeExistsInLink(root,l) ? (this._isDependencyLink(root, l) ? "url(#dependency)" : "url(#dependants)") : (maxLevel == 1 ? "" : "url(#default)"))
+                    .attr("marker-end", (l) => this._nodeExistsInLink(root,l) ? (this._isDependencyLink(root, l) ? "url(#dependency)" : "url(#dependants)") : (maxLevel == 1 ? "url(#default)" : ""))
                     .transition();
             },
 
@@ -128,6 +129,7 @@ let graph_actions = {
                 this._fadeOutAllNodesAndLinks();
                 this._highlightNodesWithIndexes(neighborIndexes);
                 this._highlightLinksFromRootWithNodesIndexes(node, neighborIndexes, maxLevel);
+	
             }
 
         };
