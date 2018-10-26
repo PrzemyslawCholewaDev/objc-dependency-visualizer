@@ -30,6 +30,9 @@
 <script type="text/javascript" src="components/editor/editor.js"></script>
 <a id="simple-menu" class="editor-button" href="#sidr">Live editor</a>
 
+<!-- Views that are visible on node selection -->
+<a id="remove-button" class="remove-button" href="#rmbt" style="display:none;">Remove node</a>
+
 <div id="chart">
     <!-- Here the SVG will be placed-->
 </div>
@@ -46,9 +49,9 @@
     //  ===================================================
 
     let config = dvconfig.create();
-
-    const dvgraph = objcdv.parse_dependencies_graph(dependencies);
-    const d3graph = dvgraph.d3jsGraph();
+    var ignoredClasses = []
+    var dvgraph = objcdv.parse_dependencies_graph(dependencies, ignoredClasses);
+    var d3graph = dvgraph.d3jsGraph();
 
     var w = window,
         d = document,
@@ -61,14 +64,14 @@
     //  =============== http://d3js.org/ Magic ===========
     //  ===================================================
 
-    const container = d3.select("#chart").append("svg")
+    var container = d3.select("#chart").append("svg")
         .attr("width", x)
         .attr("height", y)
         .style("overflow", "hidden");
 
-    const svg = container.append('g');
-    const actions = graph_actions.create(svg, dvgraph);
-    let visualizer = dvvisualizer.create(svg, config, d3graph);
+    var svg = container.append('g');
+    var actions = graph_actions.create(svg, dvgraph);
+    var visualizer = dvvisualizer.create(svg, config, d3graph);
     visualizer.initialize();
     visualizer.setupZoom(container);
 
@@ -79,21 +82,32 @@
 
 
     // Handling pressing
-    visualizer.objectNodes
-        .on("click", d => {
-            if (d3.event.defaultPrevented) { return }
-            actions.selectNodesStartingFromNode(d, 1);
-            visualizer.reapply_charge_and_links()
-        })
-        .on("contextmenu", d => {
-            if (d3.event.defaultPrevented) { return }
-            // Don't actually show context menu
-            d3.event.preventDefault();
+    function subscribe_to_node_events() {
+        window.visualizer.objectNodes
+            .on("click", d => {
+                if (d3.event.defaultPrevented) { return }
+                window.actions.selectNodesStartingFromNode(d, 1);
+                window.visualizer.reapply_charge_and_links();
+                
+                // Show or hide "remove node" button
+                var button = document.getElementById("remove-button");
+                    if (window.actions.selectedIdx > 0) {
+                        window.button.style.display = "block";
+                    } else {
+                        window.button.style.display = "none";
+                    }
+            })
+            .on("contextmenu", d => {
+                if (d3.event.defaultPrevented) { return }
+                // Don't actually show context menu
+                d3.event.preventDefault();
 
-            actions.selectNodesStartingFromNode(d);
-            visualizer.reapply_charge_and_links()
-        });
-
+                window.actions.selectNodesStartingFromNode(d);
+                window.visualizer.reapply_charge_and_links()
+            });
+    }
+    subscribe_to_node_events()
+        
 
     /*
      Window resize update
@@ -135,8 +149,32 @@
         }
 
     });
+	
+
 </script>
 
+<script>
+    //  ===================================================
+    //  =============== Node Removal      ==============
+    //  ===================================================
+	var button = document.getElementById('remove-button');
+	button.onclick = function(){
+        nodeToRemove = window.actions.selectedObject
+        console.log(nodeToRemove)
+        window.ignoredClasses.push(nodeToRemove.name)
+
+        // actions.selectNodesStartingFromNode(nodeToRemove, 1);
+        // visualizer.reapply_charge_and_links();
+        window.button.style.display = "none";
+        
+        window.dvgraph = objcdv.parse_dependencies_graph(dependencies, window.ignoredClasses);
+        window.d3graph = dvgraph.d3jsGraph();
+        window.visualizer.restartWithoutNode(nodeToRemove, window.d3graph);
+        window.actions.dvgraph = window.dvgraph
+        
+        subscribe_to_node_events()
+	}
+</script>
 
 <script>
     //  ===================================================
