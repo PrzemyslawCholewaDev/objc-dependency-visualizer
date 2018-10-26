@@ -17,7 +17,31 @@ let dvvisualizer = {
             objectNodes: null,    // d3 selection for struct and other nodes
             allNodes: null,       // d3 selection for all Possible nodes
 
-            updateMarkers: function (size) {
+            restartWithoutNode: function (newD3Graph) {
+                // Remove all elements 
+                this.svg.selectAll(".node")
+                    .data([])
+                    .exit().remove();
+                
+                this.svg.select("g").selectAll("path")
+                    .data([])
+                    .exit().remove();
+
+                this.svg.selectAll(".link")
+                    .data([])
+                    .exit().remove();
+
+                this.svg.selectAll("text")
+                    .data([])
+                    .exit().remove();
+                
+                // Initialize with data withouth the node
+                this.d3graph = newD3Graph
+                this.initialize()
+                this.updateTextVisibility(this.config.show_texts_near_circles)
+			},
+            
+			updateMarkers: function (size) {
                 function viewBox(x, y, w, h) { return [x + "", y + "", w + "", h + ""].join(" ") }
                 function moveTo(x, y) { return "M" + x + "," + y }
                 function lineTo(x, y) { return "L" + x + "," + y }

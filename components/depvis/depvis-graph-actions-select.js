@@ -28,7 +28,6 @@ let graph_actions = {
                     .classed('filtered', false)
                     .transition();
 
-
                 this.svg.selectAll('.link')
                     .attr("marker-end", "url(#default)")
                     .classed('filtered', false)

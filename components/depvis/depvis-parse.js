@@ -6,7 +6,7 @@
 // Output:
 let objcdv = {
     version: "0.0.1",
-    _createGraph: function (_objects) {
+    _createGraph: function (_objects, filteredNames) {
         return {
             nodes: [],
             links: [],
@@ -16,11 +16,11 @@ let objcdv = {
             addLink: function (link) {
 
                 var source_node = this.getNode(link.source);
-                source_node.source++;
 
                 var dest_node = this.getNode(link.dest);
-                dest_node.dest++;
-
+					
+                source_node.source++;
+				dest_node.dest++;
                 this.links.push({
                     // d3 js properties
                     source: source_node.idx,
@@ -138,13 +138,14 @@ let objcdv = {
     },
 
 
-    parse_dependencies_graph: function (dependencies) {
+    parse_dependencies_graph: function (dependencies, filteredNames) {
 
-        var graph = this._createGraph(dependencies.objects);
+        var graph = this._createGraph(dependencies.objects, filteredNames);
         var prefixes = this._createPrefixes();
 
         dependencies.links
             .filter(link => link.source != link.dest)
+			.filter(link =>	!(filteredNames.includes(link.source) || filteredNames.includes(link.dest)))
             .forEach(link => {
                 graph.addLink(link);
 
@@ -152,10 +153,14 @@ let objcdv = {
                 prefixes.addName(link.dest);
             });
 
-        // Make sure all nodes are present, even if they aren't connected
+        // Make sure all nodes are present, even if they aren't connected. As long as they're not filtered
         if (dependencies.objects != null) {
             for (p in dependencies.objects) {
-                graph.getNode(p)
+				if (!filteredNames.includes(p)) {
+	                graph.getNode(p)
+				} else {
+					console.log(p)
+				}
             }
         }
 
