@@ -160,16 +160,13 @@
 	var button = document.getElementById('remove-button');
 	button.onclick = function(){
         nodeToRemove = window.actions.selectedObject
-        console.log(nodeToRemove)
         window.ignoredClasses.push(nodeToRemove.name)
 
-        // actions.selectNodesStartingFromNode(nodeToRemove, 1);
-        // visualizer.reapply_charge_and_links();
         window.button.style.display = "none";
         
         window.dvgraph = objcdv.parse_dependencies_graph(dependencies, window.ignoredClasses);
         window.d3graph = dvgraph.d3jsGraph();
-        window.visualizer.restartWithoutNode(nodeToRemove, window.d3graph);
+        window.visualizer.restartWithoutNode(window.d3graph);
         window.actions.dvgraph = window.dvgraph
         
         subscribe_to_node_events()

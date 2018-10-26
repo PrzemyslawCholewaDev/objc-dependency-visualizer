@@ -17,11 +17,8 @@ let dvvisualizer = {
             objectNodes: null,    // d3 selection for struct and other nodes
             allNodes: null,       // d3 selection for all Possible nodes
 
-            restartWithoutNode: function (nodeToRemove, newD3) {
-                console.log("oooo")
-
-                // Remove all elements and initialize with new set
-
+            restartWithoutNode: function (newD3Graph) {
+                // Remove all elements 
                 this.svg.selectAll(".node")
                     .data([])
                     .exit().remove();
@@ -37,11 +34,11 @@ let dvvisualizer = {
                 this.svg.selectAll("text")
                     .data([])
                     .exit().remove();
-                console.log(this.svg.selectAll('.link'))
-                this.d3graph = newD3
+                
+                // Initialize with data withouth the node
+                this.d3graph = newD3Graph
                 this.initialize()
                 this.updateTextVisibility(this.config.show_texts_near_circles)
-                console.log(this.svg.selectAll('.link'))
 			},
             
 			updateMarkers: function (size) {
