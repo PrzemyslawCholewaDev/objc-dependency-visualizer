@@ -1,0 +1,1 @@
+export { default as forceConstant } from './constant-force';

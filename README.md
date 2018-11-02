@@ -4,7 +4,7 @@ Objective-C And Swift Dependencies Visualizer
 
 This is the tool, that can use .o(object) files to generate dependency graph.  
 All visualisations was done by [d3js](http://d3js.org/) library, which is just awesome!  
-This tool was made just for fun, but images can show how big your project is, how many classes it have, and how they linked to each other    
+This tool visualizes structs and classes in your iOS project, and shows which ones are dependent on which ones in form of a graph. Images can show how big your project is, how many classes it have, and how they linked to each other. Generally speaking, the more divided your classes the better. 
 
 ![Image example](https://pbs.twimg.com/media/CFDYofdUsAAzjSK.png:large)  
 
@@ -13,7 +13,7 @@ This will clone project, and run it on the latest modified project
 ```
 git clone https://github.com/PaulTaykalo/objc-dependency-visualizer.git ;
 cd objc-dependency-visualizer ;
-./generate-objc-dependencies-to-json.rb -d -s "" > origin.js ;
+./generate-objc-dependencies-to-json.rb -w > origin.js ;
 open index.html
 ```
 
@@ -22,6 +22,14 @@ open index.html
 git clone https://github.com/PaulTaykalo/objc-dependency-visualizer.git ;
 cd objc-dependency-visualizer ;
 ./generate-objc-dependencies-to-json.rb -w -s "" > origin.js ;
+open index.html
+```
+
+### If there is too much cluster and you can't see anything, try this
+```
+git clone https://github.com/PaulTaykalo/objc-dependency-visualizer.git ;
+cd objc-dependency-visualizer ;
+./generate-objc-dependencies-to-json.rb -w -s "" --ignore_leafes --ignore_models > origin.js ;
 open index.html
 ```
 

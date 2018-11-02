@@ -28,7 +28,7 @@
 <script type="text/javascript" src="components/sidr/jquery.sidr.js"></script>
 <script type="text/javascript" src="components/ace/ace.js"></script>
 <script type="text/javascript" src="components/editor/editor.js"></script>
-<a id="simple-menu" class="editor-button" href="#sidr">Live editor</a>
+<a id="save-preferences" class="editor-button" href="#sidr">Save preferences</a>
 
 <!-- Views that are visible on node selection -->
 <a id="remove-button" class="remove-button" href="#rmbt" style="display:none;">Remove node</a>
@@ -91,11 +91,13 @@
                 
                 // Show or hide "remove node" button
                 var button = document.getElementById("remove-button");
-                    if (window.actions.selectedIdx > 0) {
-                        window.button.style.display = "block";
-                    } else {
-                        window.button.style.display = "none";
-                    }
+                console.log( window.actions.selectedIdx )
+                console.log( window.actions.selectedObject )
+                if (window.actions.selectedIdx >= 0) {
+                    button.style.display = "block";
+                } else {
+                    button.style.display = "none";
+                }
             })
             .on("contextmenu", d => {
                 if (d3.event.defaultPrevented) { return }
@@ -155,14 +157,14 @@
 
 <script>
     //  ===================================================
-    //  =============== Node Removal      ==============
+    //  =============== Node Removal      =================
     //  ===================================================
 	var button = document.getElementById('remove-button');
 	button.onclick = function(){
         nodeToRemove = window.actions.selectedObject
         window.ignoredClasses.push(nodeToRemove.name)
-
-        window.button.style.display = "none";
+        
+        document.getElementById("remove-button").style.display = "none";
         
         window.dvgraph = objcdv.parse_dependencies_graph(dependencies, window.ignoredClasses);
         window.d3graph = dvgraph.d3jsGraph();
@@ -170,6 +172,21 @@
         window.actions.dvgraph = window.dvgraph
         
         subscribe_to_node_events()
+	}
+</script>
+
+<script>
+    //  ===================================================
+    //  =============== Save Preferences ==================
+    //  ===================================================
+	var button = document.getElementById('save-preferences');
+	button.onclick = function(){
+        var textToSave = ""
+        for (var name in window.ignoredClasses) {
+            textToSave += name + "\n"
+        }
+
+       // TODO: save preferences in a file 
 	}
 </script>
 

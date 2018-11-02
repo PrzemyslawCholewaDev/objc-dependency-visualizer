@@ -1,0 +1,27 @@
+<head>
+    <script src="//unpkg.com/d3-force-pod"></script>
+    <script src="//unpkg.com/d3-force-constant"></script>
+
+    <style>
+        body { margin: 0 }
+    </style>
+</head>
+
+<body>
+<script>
+    let angle = 0;
+    const f = d3.forceConstant()
+        .strength(0.3)
+        .direction(angle);
+
+    d3ForcePod()
+        .genNodes()
+        .addForce(f)
+    (document.body);
+
+    // Spin it
+    setInterval(() => {
+        f.direction(angle+=10);
+    }, 50);
+</script>
+</body>

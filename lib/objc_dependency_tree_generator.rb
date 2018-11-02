@@ -30,7 +30,9 @@ class DependencyTreeGenerator
     options[:swift_ast_show_parsed_tree] = false
     options[:ignore_primitive_types] = true
     options[:show_inheritance_only] = false
+    options[:ignore_leafes] = false
     options[:ignore_pods] = true
+    options[:ignore_models] = false
 
     OptionParser.new do |o|
       o.separator 'General options:'
@@ -76,6 +78,13 @@ class DependencyTreeGenerator
 
       o.on('-i', '--include-pods', 'Include pods classes') do
         options[:ignore_pods] = false
+      end
+      o.on('--ignore-leafes', 'Ignore nodes that dont have any children') do
+        options[:ignore_leafes] = true
+      end
+
+      o.on('--ignore-models', 'Ignore nodes that have only one capital letters') do
+        options[:ignore_models] = true
       end
 
       o.on('-f FORMAT', 'Output format. json by default. Possible values are [dot|json-pretty|json|json-var|yaml]') do |f|
@@ -154,7 +163,7 @@ class DependencyTreeGenerator
   def dependencies_to_s
     tree = build_dependency_tree
     serializer = TreeSerializer.new(tree)
-    output = serializer.serialize(@options[:output_format])
+    output = serializer.serialize(@options[:output_format], @options[:ignore_leafes], @options[:ignore_models])
 
     if @options[:target_file_name]
       File.open(@options[:target_file_name], 'w').write(output.to_s)
