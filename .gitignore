@@ -7,3 +7,5 @@ test/fixtures/sourcekitten/SourcekittenExample.xcodeproj/xcuserdata
 test/fixtures/sourcekitten-with-properties/build
 test/fixtures/sourcekitten-with-properties/SourcekittenExample.xcodeproj/project.xcworkspace/xcuserdata
 test/fixtures/sourcekitten-with-properties/SourcekittenExample.xcodeproj/xcuserdata
+dependencyCheck/
+origin*

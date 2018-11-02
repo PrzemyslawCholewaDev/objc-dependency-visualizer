@@ -1,0 +1,17 @@
+<head>
+    <script src="//unpkg.com/d3-force-pod"></script>
+    <script src="//unpkg.com/d3-force-constant"></script>
+
+    <style>
+        body { margin: 0 }
+    </style>
+</head>
+
+<body>
+<script>
+    d3ForcePod()
+        .genNodes()
+        .addForce(d3.forceConstant())
+        (document.body);
+</script>
+</body>

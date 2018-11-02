@@ -139,7 +139,6 @@ let objcdv = {
 
 
     parse_dependencies_graph: function (dependencies, filteredNames) {
-
         var graph = this._createGraph(dependencies.objects, filteredNames);
         var prefixes = this._createPrefixes();
 

@@ -8,12 +8,34 @@ class TreeSerializer
 
 
   # @return [String]
-  def serialize(output_format)
+  def serialize(output_format, ignoreLeafes, ignoreModels)
+
+    includedNodes = @dependency_tree.objects
+
+    if ignoreModels 
+      includedNodes = includedNodes.select do |object|  
+        object.scan(/[A-Z]/).length > 1
+      end
+    end
+    
+    if ignoreLeafes 
+      includedNodes = includedNodes.select do |object|  
+        @dependency_tree.links.any? {|item| item[:source] == object}
+      end
+    end
+
+    ignoredLeafes = @dependency_tree.objects.select do |object|  
+      !includedNodes.include?(object)
+    end
+
+    $stderr.puts "Following classes are omitted:"  
+    $stderr.puts ignoredLeafes.sort
+
     object_to_serialize = {}
-    object_to_serialize[:links] = @dependency_tree.links_with_types
+    object_to_serialize[:links] = @dependency_tree.links_with_types.select {|link| includedNodes.include?(link[:dest]) }
     object_to_serialize[:links_count] = @dependency_tree.links_count
     object_to_serialize[:objects] = Hash[
-      @dependency_tree.objects.map do |o|
+      includedNodes.map do |o|
         [o, { type: @dependency_tree.type(o) }]
       end
     ]

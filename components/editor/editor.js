@@ -54,7 +54,7 @@ function editor() {
             }
         });
 
-        $('#simple-menu').sidr(
+        $('#simple-menu-I-dont-know-how-to-remove-it-so-I-will-change-the-name-sorry').sidr(
             {
                 displace: false,
                 onOpen: function () {
