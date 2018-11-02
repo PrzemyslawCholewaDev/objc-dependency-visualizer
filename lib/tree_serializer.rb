@@ -12,14 +12,6 @@ class TreeSerializer
 
     includedNodes = @dependency_tree.objects
 
-    if ignoreLeafes 
-      $stderr.puts @dependency_tree.links.any? {|item| item[:source] == "Selector"}
-      $stderr.puts @dependency_tree.links.any? {|item| item[:source] == "Recipe"}
-      includedNodes = includedNodes.select do |object|  
-        @dependency_tree.links.any? {|item| item[:source] == object}
-      end
-    end
-
     if ignoreModels 
       includedNodes = includedNodes.select do |object|  
         object.scan(/[A-Z]/).length > 1
@@ -27,8 +19,6 @@ class TreeSerializer
     end
     
     if ignoreLeafes 
-      $stderr.puts @dependency_tree.links.any? {|item| item[:source] == "Selector"}
-      $stderr.puts @dependency_tree.links.any? {|item| item[:source] == "Recipe"}
       includedNodes = includedNodes.select do |object|  
         @dependency_tree.links.any? {|item| item[:source] == object}
       end
