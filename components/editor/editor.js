@@ -51,10 +51,11 @@ function createEditorManager() {
         },
 
         editorString(ignoredClasses) {
-            let str = `// This is editor that listens to every change \n
-// Delete or add lines below to update the graph
+            let str = `// This is editor that listens to every change.
+// Data here is saved between sessions.
+// Delete or add lines below to update the graph.
 
-// Ignored classes:
+// Those are ignored classes:
 userSelectedIgnoredClasses = [`
  
             for (var i = 0; i < ignoredClasses.length; i++) {

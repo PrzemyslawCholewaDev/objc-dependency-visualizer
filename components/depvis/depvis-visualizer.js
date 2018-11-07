@@ -17,34 +17,28 @@ let dvvisualizer = {
             objectNodes: null,    // d3 selection for struct and other nodes
             allNodes: null,       // d3 selection for all Possible nodes
 
-            restartWithoutNode: function (newD3Graph) {
+            reloadSimulationWithNewGraph: function (newD3Graph) {
                 this.simulation.stop()
 
                 // // Remove all elements 
                 this.svg.selectAll(".node")
                     .data([])
                     .exit().remove();
-                
                 this.svg.select("g").selectAll("path")
                     .data([])
                     .exit().remove();
-
                 this.svg.selectAll(".link")
                     .data([])
                     .exit().remove();
-
                 this.svg.selectAll("text")
                     .data([])
                     .exit().remove();
-
                 this.svg.append("defs").selectAll("marker")
                     .data([])
                     .exit().remove();
-
                 this.svg.append("g").selectAll(".node")
                     .data([])
                     .exit().remove();
-
                 this.svg.append("g").selectAll(".structNode")
                     .data([])
                     .exit().remove();

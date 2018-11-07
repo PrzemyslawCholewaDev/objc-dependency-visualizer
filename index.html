@@ -59,9 +59,6 @@
     var dvgraph = objcdv.parse_dependencies_graph(dependencies, ignoredClasses);
     var d3graph = dvgraph.d3jsGraph();
     var originalGraph = d3graph
-
-
-//...
     
     var w = window,
         d = document,
@@ -186,7 +183,7 @@
         window.dvgraph = objcdv.parse_dependencies_graph(window.dependencies, window.ignoredClasses);
         window.d3graph = dvgraph.d3jsGraph();
         
-        window.visualizer.restartWithoutNode(window.d3graph);
+        window.visualizer.reloadSimulationWithNewGraph(window.d3graph);
         window.actions.dvgraph = window.dvgraph
         window.visualizer.setupZoom(window.container);
         subscribe_to_node_events()
@@ -195,18 +192,10 @@
 
 <script>
     //  ===================================================
-    //  =============== Save Preferences ==================
+    //  =============== Preferences Editor ==================
     //  ===================================================
-	// var button = document.getElementById('save-preferences');
-	// button.onclick = function(){
-    //     var textToSave = ""
-    //     for (var name in window.ignoredClasses) {
-    //         textToSave += name + "\n"
-    //     }
-
-    //    // TODO: save preferences in a file 
-    // }
     
+    // Called when user changes text in preferences editor
     function changedText(txt) {
         // check if arrays are equal, return if so
         console.log("I saw that as well!")
@@ -222,20 +211,11 @@
         if (equal) { return }
         for (var i = 0; i < userSelectedIgnoredClasses.length; i++) {
             nodesNames = originalGraph.nodes.map((node) => node.name)
-            console.log(nodesNames)
-            console.log(nodesNames[0])
-            console.log(userSelectedIgnoredClasses[0])
-            console.log(nodesNames.includes(userSelectedIgnoredClasses[0]))
             if (!nodesNames.includes(userSelectedIgnoredClasses[i])) {
-                console.log("ABORT!")
                 return
             }
         }
         ignoredClasses = userSelectedIgnoredClasses
-
-        console.log(ignoredClasses)
-        console.log(userSelectedIgnoredClasses)
-
         updateVisualization()
     }
 </script>
