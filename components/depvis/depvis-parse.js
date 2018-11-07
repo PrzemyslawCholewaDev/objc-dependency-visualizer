@@ -157,8 +157,6 @@ let objcdv = {
             for (p in dependencies.objects) {
 				if (!filteredNames.includes(p)) {
 	                graph.getNode(p)
-				} else {
-					console.log(p)
 				}
             }
         }

@@ -28,7 +28,7 @@
 <script type="text/javascript" src="components/sidr/jquery.sidr.js"></script>
 <script type="text/javascript" src="components/ace/ace.js"></script>
 <script type="text/javascript" src="components/editor/editor.js"></script>
-<a id="save-preferences" class="editor-button" href="#sidr">Save preferences</a>
+<a id="save-preferences" class="editor-button" href="#sidr">Edit properties</a>
 
 <!-- Views that are visible on node selection -->
 <a id="remove-button" class="remove-button" href="#rmbt" style="display:none;">Remove node</a>
@@ -49,10 +49,17 @@
     //  ===================================================
 
     let config = dvconfig.create();
+    // load ignored classes from previous session
     var ignoredClasses = []
+    try {
+        ignoredClasses = JSON.parse(window.localStorage.getItem('ignoredClasses'));
+    } catch {}
+    ignoredClasses = ignoredClasses || []
+
     var dvgraph = objcdv.parse_dependencies_graph(dependencies, ignoredClasses);
     var d3graph = dvgraph.d3jsGraph();
-
+    var originalGraph = d3graph
+    
     var w = window,
         d = document,
         e = d.documentElement,
@@ -72,6 +79,7 @@
     var svg = container.append('g');
     var actions = graph_actions.create(svg, dvgraph);
     var visualizer = dvvisualizer.create(svg, config, d3graph);
+    var editorManager = createEditorManager()
     visualizer.initialize();
     visualizer.setupZoom(container);
 
@@ -161,31 +169,55 @@
 	button.onclick = function(){
         nodeToRemove = window.actions.selectedObject
         window.ignoredClasses.push(nodeToRemove.name)
-        
+        for (var i = 0; i< 1; i++) {
+            updateVisualization()
+        }
+        editorManager.changeEditorClasses(window.ignoredClasses)
+    }
+    
+    function updateVisualization() {
         document.getElementById("remove-button").style.display = "none";
         
-        window.dvgraph = objcdv.parse_dependencies_graph(dependencies, window.ignoredClasses);
+        console.log(window.localStorage.getItem('ignoredClasses'))
+        window.localStorage.setItem('ignoredClasses', JSON.stringify(window.ignoredClasses));
+        window.dvgraph = objcdv.parse_dependencies_graph(window.dependencies, window.ignoredClasses);
         window.d3graph = dvgraph.d3jsGraph();
-        window.visualizer.restartWithoutNode(window.d3graph);
-        window.actions.dvgraph = window.dvgraph
         
+        window.visualizer.reloadSimulationWithNewGraph(window.d3graph);
+        window.actions.dvgraph = window.dvgraph
+        window.visualizer.setupZoom(window.container);
         subscribe_to_node_events()
-	}
+    }
 </script>
 
 <script>
     //  ===================================================
-    //  =============== Save Preferences ==================
+    //  =============== Preferences Editor ==================
     //  ===================================================
-	var button = document.getElementById('save-preferences');
-	button.onclick = function(){
-        var textToSave = ""
-        for (var name in window.ignoredClasses) {
-            textToSave += name + "\n"
+    
+    // Called when user changes text in preferences editor
+    function changedText(txt) {
+        // check if arrays are equal, return if so
+        console.log("I saw that as well!")
+        var equal = true
+        if (ignoredClasses.length != userSelectedIgnoredClasses.length) {
+            equal = false
         }
-
-       // TODO: save preferences in a file 
-	}
+        for (var i = 0; i < ignoredClasses.length; i++) {
+            if (ignoredClasses[i] != userSelectedIgnoredClasses[i]) {
+                equal = false
+            }
+        }
+        if (equal) { return }
+        for (var i = 0; i < userSelectedIgnoredClasses.length; i++) {
+            nodesNames = originalGraph.nodes.map((node) => node.name)
+            if (!nodesNames.includes(userSelectedIgnoredClasses[i])) {
+                return
+            }
+        }
+        ignoredClasses = userSelectedIgnoredClasses
+        updateVisualization()
+    }
 </script>
 
 <script>
@@ -224,6 +256,11 @@
 
 
     d3.select("#search_input").on("input", function () {
+        console.log(window.svg._groups[0])
+        for (var i = 0; i< 1; i++) {
+            updateVisualization()
+        }
+        
         // Filter all items
         console.log("Input changed to" + this.value);
         actions.deselect_selected_node();

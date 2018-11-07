@@ -17,27 +17,36 @@ let dvvisualizer = {
             objectNodes: null,    // d3 selection for struct and other nodes
             allNodes: null,       // d3 selection for all Possible nodes
 
-            restartWithoutNode: function (newD3Graph) {
-                // Remove all elements 
+            reloadSimulationWithNewGraph: function (newD3Graph) {
+                this.simulation.stop()
+
+                // // Remove all elements 
                 this.svg.selectAll(".node")
                     .data([])
                     .exit().remove();
-                
                 this.svg.select("g").selectAll("path")
                     .data([])
                     .exit().remove();
-
                 this.svg.selectAll(".link")
                     .data([])
                     .exit().remove();
-
                 this.svg.selectAll("text")
                     .data([])
                     .exit().remove();
-                
+                this.svg.append("defs").selectAll("marker")
+                    .data([])
+                    .exit().remove();
+                this.svg.append("g").selectAll(".node")
+                    .data([])
+                    .exit().remove();
+                this.svg.append("g").selectAll(".structNode")
+                    .data([])
+                    .exit().remove();
+            
                 // Initialize with data withouth the node
                 this.d3graph = newD3Graph
                 this.initialize()
+
                 this.updateTextVisibility(this.config.show_texts_near_circles)
 			},
             
@@ -96,7 +105,6 @@ let dvvisualizer = {
             _d3graphNodesSkipped: function (type) { return this.d3graph.nodes.filter(node => node.type !== type) },
 
             _setupNodes: function () {
-
                 svg.append("g").selectAll(".node")
                     .data(this._d3graphNodesSkipped("struct"))
                     .enter()
@@ -144,7 +152,6 @@ let dvvisualizer = {
                         .strength(this._linkStrength)
                     )
                     .on("tick", this._ticked);
-
             },
 
             _linkDistance: function (link) {
@@ -301,7 +308,6 @@ let dvvisualizer = {
             _transform: function (d) {
                 return "translate(" + d.x + "," + d.y + ")";
             },
-
 
             _ticked: function () {
                 this._link.attr("d", this._link_line);
