@@ -1,70 +1,110 @@
 /**
  * Created by paultaykalo on 10/30/16.
  */
-function editor() {
-
+function createEditorManager() {
     $(document).ready(function () {
-
-        // Add sidr with editor to the page
-        $("body").append(`
-    <div id='sidr'>
-        <pre id='editor'>
-// This one is used by default
-// Groups are set based on the Prefixes
-        function default_coloring(d) {
-            return color(d.group);
-        }
-
-// This function will group nodes based on the
-// Regular expressions you've provided
-    function regex_based_coloring(d) {
-        var className = d.name
-
-        var rules = ['Magical', 'Mapp', '^NS', '^UI',  '^NI', 'AF', ''];
-//   var rules = ['ViewController', 'View']
-
-        for (var i = 0; i < rules.length; i++) {
-            var re = new RegExp(rules[i], '');
-            if (className.match(re)) {
-                return color(i + 1)
-            }
-        }
-        return 'black';
-    }
-
-// Filling out with default coloring
-   node.style('fill', default_coloring)
-// node.style("fill", regex_based_coloring)
-
-    force.start()
-        </pre>
-    </div>`
-        );
-
-        // Initialize ace editor
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        editor.getSession().setMode("ace/mode/javascript");
-
-        editor.getSession().on('change', function (e) {
-            try {
-                eval(editor.getSession().getValue())
-            } catch (err) {
-                console.log(err)
-            }
-        });
-
-        $('#simple-menu-I-dont-know-how-to-remove-it-so-I-will-change-the-name-sorry').sidr(
-            {
-                displace: false,
-                onOpen: function () {
-                    editor.resize()
-                }
-            }
-        );
-        $("#chart").css("overflow", "hidden");
-
+        editorManager.init()
     });
 
+    let editorManager = {
+        editor: null,
+        changedByUser: true,
+
+        init() {
+            // Add sidr with editor to the page
+            $("body").append(`
+<div id='sidr'>
+<pre id='editor'>
+` + editorManager.editorString(window.ignoredClasses) + `
+</pre>
+</div>`);
+            // Initialize ace editor
+            editor = ace.edit("editor");
+            editorManager.editor = editor
+            editor.setTheme("ace/theme/twilight");
+            editor.getSession().setMode("ace/mode/javascript");
+            editor.$blockScrolling = Infinity;
+
+            // User changed text
+            editor.getSession().on('change', function (e) {
+                try {
+                    if (editorManager.changedByUser) { 
+                        text = editor.getSession().getValue()
+                        eval(editor.getSession().getValue())
+                        changedText()
+                    }
+                } catch (err) {
+                    console.log(err)
+                }
+            });
+
+
+            $('#save-preferences').sidr(
+                {
+                    displace: false,
+                    onOpen: function () {
+                        editor.resize()
+                    }
+                }
+            );
+            $("#chart").css("overflow", "hidden");
+        },
+
+        editorString(ignoredClasses) {
+            let str = `// This is editor that listens to every change \n
+// Delete or add lines below to update the graph
+
+// Ignored classes:
+userSelectedIgnoredClasses = [`
+ 
+            for (var i = 0; i < ignoredClasses.length; i++) {
+                str += '\n\"' + ignoredClasses[i] + '\"'
+                if (i +1 < ignoredClasses.length) {
+                    str += ','
+                }
+            }
+            str += `
+]
+
+// Color regexes:
+// Magical
+// ^NS
+// ^UI
+`
+            return str
+        },
+
+        updateText(ignoredClasses) {
+            editorManager.changedByUser = false
+            editorManager.editor.setValue(editorManager.editorString(ignoredClasses));
+            editorManager.changedByUser = true
+        }
+    }
+
+    return {
+        changeEditorClasses(ignoredClasses) {
+            editorManager.updateText(ignoredClasses)
+        }
+    }
 }
-editor();
+
+function createObervableSettings() {
+    let settings = {
+        stuff: 123
+    }
+    let subscriptions = []
+    
+    return {
+        subscribe(listener) {
+            subscriptions.push(listener)
+        },
+        setSettings(newSettings) {
+            settings = newSettings
+            subscriptions.forEach(subscription => {
+                if (typeof subscription === 'function') {
+                    subscription(newSettings)
+                }
+            })
+        }
+    }
+}

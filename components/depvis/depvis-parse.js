@@ -37,7 +37,7 @@ let objcdv = {
                 if (node == null) {
                     var idx = Object.keys(this.nodesSet).length;
                     let object = setDefaultValue(this.objects[nodeName], {})
-                    this.nodesSet[nodeName] = node = {idx: idx, name: nodeName, source: 1, dest: 0, type: object.type};
+                    this.nodesSet[nodeName] = node = {idx: idx, name: nodeName, source: 1, dest: 0, type: object.type, x: 0, y: 0, vx: 0, vy: 0};
                 }
                 return node
             },
@@ -157,8 +157,6 @@ let objcdv = {
             for (p in dependencies.objects) {
 				if (!filteredNames.includes(p)) {
 	                graph.getNode(p)
-				} else {
-					console.log(p)
 				}
             }
         }
