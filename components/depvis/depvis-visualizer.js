@@ -131,11 +131,34 @@ let dvvisualizer = {
                     .attr("source", d => d.source)
                     .attr("dest", d => d.dest);
 
+                this.updateColors(window.colorRegexes)
+                
                 this._node = svg.selectAll('.node');
                 this._structNode = svg.selectAll('.structNode');
 
             }.bind(visualizer),
 
+            updateColors: function(colorRegexes) {
+                if (colorRegexes.length == 0) {
+                    this.objectNodes.style("fill", d => this.color(d.group))
+                    return
+                }
+                // This function will group nodes based on the
+                // Regular expressions you've provided
+                function regex_based_coloring(d) {
+                    var className = d.name
+                    for (var i = 0; i < colorRegexes.length; i++) {
+                        var re = new RegExp(colorRegexes[i], '');
+                        if (className.match(re)) {
+                            return i + 1
+                        }
+                    }
+                    return 0;
+                }
+                // this.visualizer.objectNodes.style('fill', regex_based_coloring)
+                this.objectNodes.style("fill", d => this.color(regex_based_coloring(d)))
+            },
+            
             _radius: function (node) {
                 return config.default_circle_radius + config.default_circle_radius * node.source / 10;
             },
