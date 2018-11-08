@@ -56,9 +56,17 @@
     } catch {}
     ignoredClasses = ignoredClasses || []
 
+    // load color regexes from previous session
+    var colorRegexes = []
+    try {
+        colorRegexes = JSON.parse(window.localStorage.getItem('colorRegexes'));
+    } catch {}
+    colorRegexes = colorRegexes || ['.*Api', '.*FlowController', '.*Manager', '.*ViewController', '.*ViewModel', '.*View', ''];
+
+
     var dvgraph = objcdv.parse_dependencies_graph(dependencies, ignoredClasses);
     var d3graph = dvgraph.d3jsGraph();
-    var originalGraph = d3graph
+    var originalGraph = objcdv.parse_dependencies_graph(dependencies, []);
     
     var w = window,
         d = document,
@@ -169,17 +177,15 @@
 	button.onclick = function(){
         nodeToRemove = window.actions.selectedObject
         window.ignoredClasses.push(nodeToRemove.name)
-        for (var i = 0; i< 1; i++) {
-            updateVisualization()
-        }
-        editorManager.changeEditorClasses(window.ignoredClasses)
+        updateVisualization()
+        editorManager.changeEditorClasses(window.ignoredClasses, window.colorRegexes)
     }
     
     function updateVisualization() {
         document.getElementById("remove-button").style.display = "none";
         
-        console.log(window.localStorage.getItem('ignoredClasses'))
         window.localStorage.setItem('ignoredClasses', JSON.stringify(window.ignoredClasses));
+
         window.dvgraph = objcdv.parse_dependencies_graph(window.dependencies, window.ignoredClasses);
         window.d3graph = dvgraph.d3jsGraph();
         
@@ -196,28 +202,52 @@
     //  ===================================================
     
     // Called when user changes text in preferences editor
-    function changedText(txt) {
-        // check if arrays are equal, return if so
-        console.log("I saw that as well!")
-        var equal = true
-        if (ignoredClasses.length != userSelectedIgnoredClasses.length) {
-            equal = false
-        }
-        for (var i = 0; i < ignoredClasses.length; i++) {
-            if (ignoredClasses[i] != userSelectedIgnoredClasses[i]) {
+    function changedText() {
+        function changeFilteredClasses() {
+            // check if arrays are equal, return if so
+            var equal = true
+            if (ignoredClasses.length != userSelectedIgnoredClasses.length) {
                 equal = false
             }
-        }
-        if (equal) { return }
-        for (var i = 0; i < userSelectedIgnoredClasses.length; i++) {
-            nodesNames = originalGraph.nodes.map((node) => node.name)
-            if (!nodesNames.includes(userSelectedIgnoredClasses[i])) {
-                return
+            for (var i = 0; i < ignoredClasses.length; i++) {
+                if (ignoredClasses[i] != userSelectedIgnoredClasses[i]) {
+                    equal = false
+                }
             }
+            if (equal) { return }
+            // check if all classes are valid
+            for (var i = 0; i < userSelectedIgnoredClasses.length; i++) {
+                nodesNames = Object.keys(originalGraph.nodesSet)
+                if (!nodesNames.includes(userSelectedIgnoredClasses[i])) {
+                    return
+                }
+            }
+            
+            ignoredClasses = userSelectedIgnoredClasses
+            updateVisualization()
         }
-        ignoredClasses = userSelectedIgnoredClasses
-        updateVisualization()
+
+        function updateColors() {
+            // check if arrays are equal, return if so
+            var equal = true
+            if (colorRegexes.length != userSelectedColorRegexes.length) {
+                equal = false
+            }
+            for (var i = 0; i < colorRegexes.length; i++) {
+                if (colorRegexes[i] != userSelectedColorRegexes[i]) {
+                    equal = false
+                }
+            }
+            if (equal) { return }
+            colorRegexes = userSelectedColorRegexes
+            window.localStorage.setItem('colorRegexes', JSON.stringify(colorRegexes));
+            window.visualizer.updateColors(colorRegexes)
+        }
+
+        changeFilteredClasses()
+        updateColors()
     }
+    
 </script>
 
 <script>
@@ -256,11 +286,6 @@
 
 
     d3.select("#search_input").on("input", function () {
-        console.log(window.svg._groups[0])
-        for (var i = 0; i< 1; i++) {
-            updateVisualization()
-        }
-        
         // Filter all items
         console.log("Input changed to" + this.value);
         actions.deselect_selected_node();

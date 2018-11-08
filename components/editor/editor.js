@@ -15,7 +15,7 @@ function createEditorManager() {
             $("body").append(`
 <div id='sidr'>
 <pre id='editor'>
-` + editorManager.editorString(window.ignoredClasses) + `
+` + editorManager.editorString(window.ignoredClasses, window.colorRegexes) + `
 </pre>
 </div>`);
             // Initialize ace editor
@@ -50,7 +50,7 @@ function createEditorManager() {
             $("#chart").css("overflow", "hidden");
         },
 
-        editorString(ignoredClasses) {
+        editorString(ignoredClasses, colorRegexes) {
             let str = `// This is editor that listens to every change.
 // Data here is saved between sessions.
 // Delete or add lines below to update the graph.
@@ -67,24 +67,31 @@ userSelectedIgnoredClasses = [`
             str += `
 ]
 
-// Color regexes:
-// Magical
-// ^NS
-// ^UI
+// Color regexes
+// Remove all for default coloring
+userSelectedColorRegexes = [`
+            for (var i = 0; i < colorRegexes.length; i++) {
+                str += '\n\"' + colorRegexes[i] + '\"'
+                if (i +1 < colorRegexes.length) {
+                    str += ','
+                }
+            }
+            str += `
+]
 `
             return str
         },
 
-        updateText(ignoredClasses) {
+        updateText(ignoredClasses, colorRegexes) {
             editorManager.changedByUser = false
-            editorManager.editor.setValue(editorManager.editorString(ignoredClasses));
+            editorManager.editor.setValue(editorManager.editorString(ignoredClasses, colorRegexes));
             editorManager.changedByUser = true
         }
     }
 
     return {
         changeEditorClasses(ignoredClasses) {
-            editorManager.updateText(ignoredClasses)
+            editorManager.updateText(ignoredClasses, window.colorRegexes)
         }
     }
 }
