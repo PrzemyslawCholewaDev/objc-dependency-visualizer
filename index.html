@@ -177,10 +177,7 @@
 	button.onclick = function(){
         nodeToRemove = window.actions.selectedObject
         window.ignoredClasses.push(nodeToRemove.name)
-        for (var i = 0; i< 1; i++) {
-            updateVisualization()
-        }
-        console.log(window.colorRegexes)
+        updateVisualization()
         editorManager.changeEditorClasses(window.ignoredClasses, window.colorRegexes)
     }
     
@@ -289,10 +286,6 @@
 
 
     d3.select("#search_input").on("input", function () {
-        for (var i = 0; i< 1; i++) {
-            updateVisualization()
-        }
-        
         // Filter all items
         console.log("Input changed to" + this.value);
         actions.deselect_selected_node();

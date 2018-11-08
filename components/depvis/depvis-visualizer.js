@@ -138,6 +138,7 @@ let dvvisualizer = {
 
             }.bind(visualizer),
 
+            // Called from index.html, updates color when regexes change
             updateColors: function(colorRegexes) {
                 if (colorRegexes.length == 0) {
                     this.objectNodes.style("fill", d => this.color(d.group))
@@ -155,7 +156,6 @@ let dvvisualizer = {
                     }
                     return 0;
                 }
-                // this.visualizer.objectNodes.style('fill', regex_based_coloring)
                 this.objectNodes.style("fill", d => this.color(regex_based_coloring(d)))
             },
             
