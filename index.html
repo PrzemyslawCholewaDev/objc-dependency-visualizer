@@ -19,9 +19,13 @@
 <form id="form">
     <label><input type="range" name="circle_size" min="1" max="50" value="15"/> Circle size</label><br>
     <label><input type="range" name="charge_multiplier" min="1" max="500" value="100"/> Charge multiplier</label><br>
-    <label><input type="range" name="link_strength" min="0.1" max="100" value="7"/> Link strength</label><br>
+    <label><input type="range" name="link_strength" min="0.1" max="10" value="7"/> Link strength</label><br>
     <label><input type="checkbox" name="show_texts_near_circles"/> Show names</label><br>
     <input id="search_input" placeholder="Type regexp to filter nodes" style="width:100%;"><br>
+    <label>See cycles</label>
+    <a id="previous_cycle" href="#" class="previous round">&#x2190;</a>
+    <a id="cancel_cycle" href="#" class="next round">&#10005;</a>
+    <a id="next_cycle" href="#" class="previous round">&#x2192;</a> <br>
 </form>
 
 <!-- Add editor logic with button and everything else -->
@@ -295,4 +299,25 @@
         }
         visualizer.reapply_charge_and_links();
     });
+</script>
+
+
+<script>
+    //  ===================================================
+    //  ===============     Cycles      ===================
+    //  ===================================================
+    var button = document.getElementById('next_cycle').onclick = function(){
+        actions.showCycle(1);
+        window.visualizer.reapply_charge_and_links();
+    }
+    
+    var button = document.getElementById('previous_cycle').onclick = function(){
+        actions.showCycle(-1);
+        window.visualizer.reapply_charge_and_links();
+    }
+
+    var button = document.getElementById('cancel_cycle').onclick = function(){
+        actions.deselectCycle();
+        window.visualizer.reapply_charge_and_links();
+    }
 </script>

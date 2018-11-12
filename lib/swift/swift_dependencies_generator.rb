@@ -5,7 +5,7 @@ class SwiftDependenciesGenerator
     # YAML.add_domain_type("", "private") { |type, val|
     #   'AnyObject'
     # }
-
+    
     ignoredClasses = Set.new
     ignoredClasses = ignoredClasses(object_files_dir) if ignorePods
 

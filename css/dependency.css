@@ -127,6 +127,12 @@ form {
     top: 60px;
 }
 
+.cyclesform {
+    position: absolute;
+    right: 10px;
+    top: 260px;
+}
+
 #save-preferences {
     position: absolute;
     right: 10px;
@@ -194,4 +200,30 @@ form {
     background-image: -o-linear-gradient(top, #545f66, #111112);
     background-image: linear-gradient(to bottom, #545f66, #111112);
     text-decoration: none;
+}
+
+.previous {
+    background-color: #f1f1f1;
+    color: black;
+    padding: 8px 8px;
+}
+
+.next {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 10px;
+}
+
+.round {
+    border-radius: 50%;
+}
+
+a {
+    text-decoration: none;
+    display: inline-block;
+}
+
+a:hover {
+    background-color: #ddd;
+    color: black;
 }
