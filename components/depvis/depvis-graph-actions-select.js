@@ -11,9 +11,13 @@ let graph_actions = {
             svg: svg,
             selectedObject: {},
             dvgraph: dvgraph,
+            currentCycle: -1,
+            isSelectedCycle: false,
 
             deselect_node: function (d) {
-                this._unlockNode(d);
+                if (d != null) {
+                    this._unlockNode(d);
+                }
                 this.selectedIdx = -1;
                 this.selectedObject = {};
 
@@ -68,14 +72,16 @@ let graph_actions = {
                 return false;
             },
 
-            _fadeOutAllNodesAndLinks: function () {
+            _fadeOutAllNodesAndLinks: function (fadeNodes) {
                 // Fade out all circles
-                this.svg.selectAll('.node, .structNode')
-                    .classed('filtered', true)
-                    .each(function (node) {
-                        node.filtered = true;
-                        node.neighbours = false;
-                    }).transition();
+                if (fadeNodes) {
+                    this.svg.selectAll('.node, .structNode')
+                        .classed('filtered', true)
+                        .each(function (node) {
+                            node.filtered = true;
+                            node.neighbours = false;
+                        }).transition();
+                }
 
                 this.svg.selectAll('text')
                     .classed('filtered', true)
@@ -115,6 +121,14 @@ let graph_actions = {
                     .transition();
             },
 
+            _highlightLinksInCycle: function (links, nodeNeighbors, maxLevel) {
+                links
+                    .classed('filtered', false)
+                    .classed('dependency', true)
+                    .attr("marker-end",  "url(#dependency)")
+                    .transition();
+            },
+
             selectNodesStartingFromNode: function (node, maxLevel = 100) {
                 if (this._deselectNodeIfNeeded(node, "level" + maxLevel)) {
                     return
@@ -125,12 +139,95 @@ let graph_actions = {
                     this.dvgraph.nodesStartingFromNode(node, {max_level: maxLevel, use_backward_search: maxLevel == 1})
                         .map((n) => n.index);
 
-                this._fadeOutAllNodesAndLinks();
+                this._fadeOutAllNodesAndLinks(true);
                 this._highlightNodesWithIndexes(neighborIndexes);
                 this._highlightLinksFromRootWithNodesIndexes(node, neighborIndexes, maxLevel);
 	
-            }
+            },
 
+            showCycle: function(currentIndexModifier) {
+                isSelectedCycle = true
+                const cycles = this.cyclesInGraph()
+                this.currentCycle = (this.currentCycle + currentIndexModifier + cycles.length) % cycles.length
+
+                this._fadeOutAllNodesAndLinks(true);
+
+                let neighborIndexes = cycles[this.currentCycle]
+                this._highlightNodesWithIndexes(neighborIndexes);
+
+                let links = this.svg.selectAll('.link')
+                    .filter((link) => neighborIndexes.includes(link.source.idx) && neighborIndexes.includes(link.target.idx))
+                this._highlightLinksInCycle(links)
+            },
+
+            deselectCycle: function() {
+                if (isSelectedCycle) {
+                    this.deselect_node()
+                    isSelectedCycle = false
+                } else {
+                    this.showCycle(0)
+                }
+            },
+
+            cyclesInGraph: function() {
+                // Create simple readable graph model
+                let allNodes = Object.keys(this.dvgraph.nodesSet)
+                    .map((n) => this.dvgraph.nodesSet[n].index);
+                let links = this.svg.selectAll('.link')
+                let graph = {}
+                for (var node in allNodes) {
+                    var destinations = []
+                    links
+                        .filter((link) => link.source.idx == node)
+                        .each(function(link){
+                            destinations.push(link.target.idx)
+                        });
+                    graph[node] = destinations
+                }
+
+                // Get all cycles
+                var unfilteredCycles = this.getCycles(graph);
+
+                // Filter duplicates
+                var filteredCycles = []
+                for (unfilteredCycle of unfilteredCycles) {
+                    unfilteredCycle.sort()
+                    if ( !filteredCycles.some(cycle => JSON.stringify(cycle) == JSON.stringify(unfilteredCycle)) ) { //!filteredCycles.includes(unfilteredCycle)) {
+                        filteredCycles.push(unfilteredCycle)
+                    }
+                }
+                filteredCycles.sort()
+                return filteredCycles
+            },
+
+            getCycles: function(graph) {
+                var cycles = []
+                // Copy the graph, converting all node references to String
+                graph = Object.assign(...Object.keys(graph).map( node =>
+                    ({ [node]: graph[node].map(String) }) 
+                ));
+            
+                let queue = Object.keys(graph).map( node => [node] );
+                while (queue.length) {
+                    const batch = [];
+                    for (const path of queue) {
+                        const children = graph[path[0]] || [];
+                        for (const node of children) {
+                            if (node === path[path.length-1]) {
+                                cycles.push([...path]
+                                    .map((x) => parseInt(x)));
+                                continue
+                            }
+                            if (path.includes(node)) {
+                                continue
+                            }
+                            batch.push([node, ...path]);
+                        }
+                    }
+                    queue = batch;
+                }
+                return cycles
+            }
         };
     }
 };

@@ -2,16 +2,6 @@
 class SwiftPrimitives
   @@primitive_swift_types =
     Set.new([
-      # 'BaseViewController',
-      #  'View',
-      #  'ViewSetupable',
-      # 'FlowController',
-      # 'ApplicationFactory',
-      # 'ApiClient',
-      # 'DeliveryOrder',
-      # 'MBProgressHUD',
-      # 'Order',
-       #Others:
       '_findStringSwitchCase',
       'DispatchQueue',
       'URLComponents',
