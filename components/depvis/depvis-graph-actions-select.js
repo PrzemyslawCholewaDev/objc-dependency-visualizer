@@ -14,9 +14,9 @@ let graph_actions = {
             currentCycle: -1,
             isSelectedCycle: false,
 
-            deselect_node: function (d) {
-                if (d != null) {
-                    this._unlockNode(d);
+            deselect_node: function (node) {
+                if (node != null) {
+                    this._unlockNode(node);
                 }
                 this.selectedIdx = -1;
                 this.selectedObject = {};
@@ -121,14 +121,6 @@ let graph_actions = {
                     .transition();
             },
 
-            _highlightLinksInCycle: function (links, nodeNeighbors, maxLevel) {
-                links
-                    .classed('filtered', false)
-                    .classed('dependency', true)
-                    .attr("marker-end",  "url(#dependency)")
-                    .transition();
-            },
-
             selectNodesStartingFromNode: function (node, maxLevel = 100) {
                 if (this._deselectNodeIfNeeded(node, "level" + maxLevel)) {
                     return
@@ -155,9 +147,12 @@ let graph_actions = {
                 let neighborIndexes = cycles[this.currentCycle]
                 this._highlightNodesWithIndexes(neighborIndexes);
 
-                let links = this.svg.selectAll('.link')
+                this.svg.selectAll('.link')
                     .filter((link) => neighborIndexes.includes(link.source.idx) && neighborIndexes.includes(link.target.idx))
-                this._highlightLinksInCycle(links)
+                    .classed('filtered', false)
+                    .classed('dependency', true)
+                    .attr("marker-end",  "url(#dependency)")
+                    .transition();
             },
 
             deselectCycle: function() {
