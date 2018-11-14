@@ -65,7 +65,7 @@
     try {
         colorRegexes = JSON.parse(window.localStorage.getItem('colorRegexes'));
     } catch {}
-    colorRegexes = colorRegexes || ['.*Api', '.*FlowController', '.*Manager', '.*ViewController', '.*ViewModel', '.*View', ''];
+    colorRegexes = colorRegexes || [ '.*Api', '.*FlowController', '.*Manager', '.*ViewController', '.*Controller', '.*ViewModel', '.*View', 'Service', ''];
 
 
     var dvgraph = objcdv.parse_dependencies_graph(dependencies, ignoredClasses);
