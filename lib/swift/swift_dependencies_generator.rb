@@ -1,16 +1,12 @@
 class SwiftDependenciesGenerator
 
   def generate_dependencies(object_files_dir, ignorePods)
-    # This thing need to be commented :) It's removes too many connections
-    # YAML.add_domain_type("", "private") { |type, val|
-    #   'AnyObject'
-    # }
     
     ignoredClasses = Set.new
     ignoredClasses = ignoredClasses(object_files_dir) if ignorePods
-
+    
+    # puts object_files_dir
     swift_deps_files_in_dir(object_files_dir) do |my_text_file|
-      # puts my_text_file
       begin
         dependencies = YAML.load_file(my_text_file)
       rescue Exception => e

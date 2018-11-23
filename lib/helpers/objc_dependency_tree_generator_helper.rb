@@ -20,6 +20,10 @@ def find_project_output_directory(derived_data_paths, project_prefix, project_su
     }
   end
 
+  paths = paths.select { |path| 
+       path !~ /Pods\.build/
+  }
+
   log.call "There were #{paths.length} directories found"
   if paths.empty?
     log.call "Cannot find projects that starts with '#{project_prefix}'"
