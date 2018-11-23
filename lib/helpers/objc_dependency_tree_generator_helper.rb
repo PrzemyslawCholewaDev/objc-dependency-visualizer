@@ -20,6 +20,10 @@ def find_project_output_directory(derived_data_paths, project_prefix, project_su
     }
   end
 
+  paths = paths.select { |path| 
+       path !~ /Pods\.build/
+  }
+
   log.call "There were #{paths.length} directories found"
   if paths.empty?
     log.call "Cannot find projects that starts with '#{project_prefix}'"
@@ -50,6 +54,8 @@ def find_project_output_directory(derived_data_paths, project_prefix, project_su
   end
 
   paths_sorted_by_time = filtered_by_target_paths.sort_by { |f| File.ctime(f.chomp) }
+
+  paths_sorted_by_time.each{ |x| log.call x }
 
   last_modified_dir = paths_sorted_by_time.last.chomp
   log.call "Last modifications were in\n#{last_modified_dir}\ndirectory at\n#{File.ctime(last_modified_dir)}"
