@@ -6,7 +6,7 @@ This is the tool, that can use Derived Data files to generate dependency graph. 
 All visualisations was done by [d3js](http://d3js.org/) library, which is just awesome!  
 ![Demo](demo.gif)
 
-### Easiest way - For those who don't like to read docs
+## Easiest way - For those who don't like to read docs
 This will clone project, and run it on the latest modified project
 ```
 git clone git@github.com:PrzemyslawCholewaDev/swift-dependency-visualizer.git ;
@@ -31,9 +31,9 @@ Examples are [here](https://github.com/PaulTaykalo/objc-dependency-visualizer/wi
 Share image to the Twitter with [#objcdependencyvisualizer](https://twitter.com/search/realtime?q=%23objcdependencyvisualizer) hashtag
 
 
-### Somewhat almost full documentation:"
+## Somewhat almost full documentation:"
 
-## Getting dependencies
+### Getting dependencies
 
 ```
 ./generate-objc-dependencies-to-json.rb has follwing flags:
@@ -53,7 +53,7 @@ Share image to the Twitter with [#objcdependencyvisualizer](https://twitter.com/
 --ignore-models, Ignore nodes that have only one capital letters
 ```
 
-## Visualizing
+### Visualizing
 
 Open index.html in Google Chrome, it will work faster. There are following features:
 - Right of a bat, if some nodes aren't connected to any other, it means it can be safely deleted.
